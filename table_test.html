@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+    <title>CSV to HTML Table</title>
+	<style>
+    .scrollable-container {
+      height: 200px; /* Adjust height as needed */
+      overflow-y: scroll;
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+    <input type="file" id="csvFile" accept=".csv">
+    <button onclick="loadCSV()">CSV 파일 불러오기 </button>
+	<table id="csvTable"></table>
+	<div id="divId"></div>
+    <script>
+        function loadCSV(divId) {
+		  const csvFile = document.getElementById('csvFile').files[0];
+		  const reader = new FileReader();
+
+		  reader.onload = function(e) {
+			const csvData = e.target.result;  
+
+			const rows = csvData.split('\n');
+
+			const table = document.createElement('table');
+			const thead = table.createTHead();
+			const headerRow = thead.insertRow();
+
+			// Assuming first row is header
+			const headers = rows[0].split(',');
+			headers.forEach(header => {
+			  const th = document.createElement('th');
+			  th.textContent = header;
+			  headerRow.appendChild(th);  
+
+			});
+
+			const tbody = table.createTBody();
+			rows.slice(1).forEach(row => {
+			  if (row.trim() !== '') 
+			  { // Check for empty lines
+				const rowData = row.split(',');
+				const tableRow = tbody.insertRow();
+				rowData.forEach(data => {
+				  const cell = tableRow.insertCell();
+				  cell.textContent = data;
+				});
+			  } else {
+				// Add an empty row for blank lines
+				const emptyRow = tbody.insertRow();
+				//const emptyRow = document.createElement('td');
+				//const cell = tbody.createElement('td');
+				emptyRow.innerHTML = '&nbsp;';
+			  }
+			});
+			
+			document.body.appendChild(table);
+			const targetDiv = document.getElementById(divId);
+			targetDiv.appendChild(table);
+		  };
+
+		  reader.readAsText(csvFile);
+		}
+    </script>
+</body>
+</html>
